@@ -25,8 +25,6 @@ total_trans<-subset(total_data_imputed, select=select_feat)
 head(total_trans)
 dim(total_trans)
 
-
-
 #apply mean centered transformation to the appropriate columns based on feature importance from previous GBM model
 preProcValues <- preProcess(total_trans, method = c("center", "scale"))
 train_trans<-predict(preProcValues, total_trans)
@@ -35,10 +33,10 @@ train_trans<-predict(preProcValues, total_trans)
 
 ##########prepare dataset without dummy vectors###########
 k=dim(trainData)[1]
-training=train_trans[1:k,] #should be 1460
+training=train_trans[1:k,] #size should be 1460
 g=dim(train_trans)[1]
 k=k+1
-test_set=train_trans[k:g,] # should be 1459
+test_set=train_trans[k:g,] #size should be 1459
 
 training_price=cbind(training, trainData$log_price)
 colnames(training_price)[colnames(training_price)=="trainData$log_price"] <- "log_price"
@@ -53,7 +51,7 @@ validate_set <-training_price[ind==2,]
 #categorical values without encoding.
 
 
-#############try GBM gridsearch###############################
+###############################  try GBM gridsearch  ###############################
 #use formula in caret train package later, it would automaticall create dummy variables for 
 #categorical factors. Use non-formula interface to compare to GBM package later
 
@@ -104,8 +102,7 @@ rmse(validate_set$log_price, prediction_val_gbm)
 ##optimized for depth 14, minobs 8, lr=0.0005, ntrees=30000
 #LB=0.13533,, val_loss=0.1419481
 
-
-################## Feature Selection using Univariate Filters #################
+############################# Feature Selection using Univariate Filters #####################
 #Feature Selection using Univariate statistical methods
 library(gam)
 library(randomForest)
@@ -120,7 +117,7 @@ rmse(validate_set$log_price, prediction_val_sbf)
 
 #val_loss=0.1621139
 
-################# Random Forest by Randomization (extratrees) ############################
+################################### Random Forest by Randomization (extratrees) ############################
 library(randomForest)
 library(extraTrees)
 rfrGrid1 <-  expand.grid(mtry= c(17,20), 
@@ -128,7 +125,6 @@ rfrGrid1 <-  expand.grid(mtry= c(17,20),
 
 set.seed(21)                 
 fitControl <- trainControl(method = "cv",number = 5)
-#use non-formula syntax gave slightly better rmse
 #for RF, it requires formula to convert to dummy variables, number of categorical variables in a feature exceeded the limit (32)
 rfrFit1<-train(log_price~., data=training_set,
                method = "extraTrees", metric='RMSE',
@@ -143,8 +139,7 @@ rfrGrid2 <-  expand.grid(mtry= c(17,18),
 
 set.seed(21)                 
 fitControl <- trainControl(method = "cv",number = 5)
-#use non-formula syntax gave slightly better rmse
-#for RF, it requires formula to convert to dummy variables, number of categorical variables in a feature exceeded the limit (32)
+#for RF, it requires formula syntax to convert to dummy variables, number of categorical variables in a feature exceeded the limit (32)
 rfrFit2<-train(log_price~., data=training_set,
                method = "extraTrees", metric='RMSE',
                trControl = fitControl,
@@ -156,7 +151,7 @@ prediction_val_rfr<-predict(rfrFit2, validate_set)
 rmse(validate_set$log_price, prediction_val_rfr)
 ##val_loss=0.154461
 
-###############make final prediction on test set
+######################## make final prediction on test set ###################
 prediction_test<-predict(gbmFit2, test_set)
 prediction_price<-exp(prediction_test)
 
