@@ -16,3 +16,5 @@
 <p>This algorithm is the most time consuming of the three. The parameters availabe for grid search is number of random predictor variables selected at each split (mtry), and number of random threshold for each predictor variable (numRandomCuts). Validation loss was 0.154461.
 
 <p>Genetic Algorithm in the <i> Caret </i> package was tried, but it kept on freezing R studio using up too memory. Same with the Regularized Random Forest algorithm. Parallelization of the computation should be explored in R to resolve these issues. In addition, algorithms like GBM and Xgboost don't yield the same results when evaluated against the corresponding models in <i> Caret </i>.
+
+<p>Reference<br>http://topepo.github.io/caret/index.html</i></p>
